@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { createLogger } from 'redux-logger';
-import { searchKitties } from './reducers.js';
+import thunkMiddleware from 'redux-thunk';
+import { searchKitties, requestUsers } from './reducers.js';
 import './index.css';
 import App from './containers/App.js';
 import * as serviceWorker from './serviceWorker';
 import 'tachyons';
 
 const logger = createLogger();
-const store = createStore(searchKitties, applyMiddleware(logger));
+const rootReducer = combineReducers({ searchKitties, requestUsers })
+const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 // searchKitties is the reducer. You'll want to replace this with a rootReducer
 
 ReactDOM.render(
