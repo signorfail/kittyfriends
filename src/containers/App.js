@@ -1,15 +1,28 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import CardList from '../components/CardList.js';
 import SearchBox from '../components/SearchBox.js';
 import Scroll from '../components/Scroll.js';
 import ErrorBoundary from '../components/ErrorBoundary.js';
+import { setSearchField } from '../actions.js';
+
+const mapStateToProps = state => {
+	return {
+		searchField: state.searchField
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+	}
+}
 
 class App extends Component {
 	constructor() {
 		super()
 		this.state = {
-			kitties: [],
-			searchfield: ''
+			kitties: []
 		}
 	}
 
@@ -19,15 +32,12 @@ class App extends Component {
 			.then(users => {this.setState({ kitties: users})});
 	}
 
-	onSearchChange = (event) => {
-		this.setState({ searchfield: event.target.value })
-	}
-
 	render () {
-		const { kitties, searchfield } = this.state;
+		const { kitties } = this.state;
+		const { searchField, onSearchChange } = this.props;
 		// destructuring this.state to kitties and searchfield
 		const filteredKitties = kitties.filter(kitty => {
-			return kitty.username.toLowerCase().includes(searchfield.toLowerCase());
+			return kitty.username.toLowerCase().includes(searchField.toLowerCase());
 		}) 
 		// Can change the var 'kitty' to whatever describes the the 'user'
 		return !kitties.length ?
@@ -37,7 +47,7 @@ class App extends Component {
 		(
 			<div className='tc'>
 				<h1 className='f1'>My Little Kitties</h1>
-				<SearchBox searchChange={this.onSearchChange}/>
+				<SearchBox searchChange={onSearchChange}/>
 				<Scroll>
 					<ErrorBoundary>
 						<CardList kitties={filteredKitties} />
@@ -48,4 +58,4 @@ class App extends Component {
 	}
 }
 
-export default App
+export default connect(mapStateToProps, mapDispatchToProps)(App);
